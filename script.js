@@ -1,6 +1,7 @@
 
 let kuber = JSON.parse(localStorage.getItem("kuber") || "[]");
 let aktivKube = null;
+let bildeData = null;
 
 function visKubeoversikt() {
   document.getElementById("kubeoversikt").style.display = "block";
@@ -42,6 +43,7 @@ function lagreNyKube() {
 
 function visDetaljer(index) {
   aktivKube = kuber[index];
+  bildeData = null;
   document.getElementById("kubeoversikt").style.display = "none";
   document.getElementById("registrer-kube").style.display = "none";
   document.getElementById("kube-detaljer").style.display = "block";
@@ -50,6 +52,9 @@ function visDetaljer(index) {
   document.getElementById("plassering").innerText = aktivKube.plassering;
   document.getElementById("type").innerText = aktivKube.type;
   document.getElementById("opprettet").innerText = aktivKube.opprettet;
+
+  document.getElementById("forhåndsvisning").src = "";
+  document.getElementById("forhåndsvisning").style.display = "none";
 
   visLogg();
 }
@@ -60,7 +65,8 @@ function visBilde(event) {
   if (fil) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      img.src = e.target.result;
+      bildeData = e.target.result;
+      img.src = bildeData;
       img.style.display = "block";
     };
     reader.readAsDataURL(fil);
@@ -73,17 +79,18 @@ function lagreInspeksjon() {
     vær: document.getElementById("vær").value,
     notat: document.getElementById("notat").value,
     tilstand: document.querySelector('input[name="tilstand"]:checked')?.value || "n/a",
-    
-  const bildeElement = document.getElementById("forhåndsvisning");
-  const bilde = bildeElement.style.display === "block" ? bildeElement.src : null;
-  bilde: bilde,
-
+    bilde: bildeData,
     tid: new Date().toLocaleString()
   };
   const nøkkel = "logg_" + aktivKube.id;
   const eksisterende = JSON.parse(localStorage.getItem(nøkkel) || "[]");
   eksisterende.unshift(data);
   localStorage.setItem(nøkkel, JSON.stringify(eksisterende));
+  document.getElementById("temp").value = "";
+  document.getElementById("vær").value = "";
+  document.getElementById("notat").value = "";
+  document.getElementById("forhåndsvisning").style.display = "none";
+  bildeData = null;
   visLogg();
 }
 
@@ -96,21 +103,22 @@ function visLogg() {
     let farge = entry.tilstand === "grønn" ? "#ccffcc" :
                 entry.tilstand === "gul" ? "#fffccc" :
                 entry.tilstand === "rød" ? "#ffcccc" : "#eee";
-    
-    div.innerHTML += `<div style="background:${farge}; padding:5px; margin-bottom:10px;" id="logg-${entry.tid.replaceAll(/[^\d]/g,'')}">
-    <strong>${entry.tid}</strong><br>
-    ${entry.temp}°C | ${entry.vær} | ${entry.tilstand}<br>
-    ${entry.notat}<br>
-    ${entry.bilde ? "<img src='" + entry.bilde + "' style='max-width:100px;'>" : ""}<br>
-    <button onclick="slettLogg('${entry.tid}')">🗑 Slett</button>
-    </div>`;
-padding:5px;margin-bottom:10px;">
+    div.innerHTML += `<div style="background:${farge};padding:5px;margin-bottom:10px;">
       <strong>${entry.tid}</strong><br>
       ${entry.temp}°C | ${entry.vær} | ${entry.tilstand}<br>
       ${entry.notat}<br>
       ${entry.bilde ? "<img src='" + entry.bilde + "' style='max-width:100px;'>" : ""}
+      <br><button onclick="slettLogg('${entry.tid}')">🗑 Slett</button>
     </div>`;
   });
+}
+
+function slettLogg(tid) {
+  const nøkkel = "logg_" + aktivKube.id;
+  let logg = JSON.parse(localStorage.getItem(nøkkel) || "[]");
+  logg = logg.filter(entry => entry.tid !== tid);
+  localStorage.setItem(nøkkel, JSON.stringify(logg));
+  visLogg();
 }
 
 function eksporterData() {
@@ -153,12 +161,3 @@ function importerData(event) {
 }
 
 visKubeoversikt();
-
-
-function slettLogg(tid) {
-  const nøkkel = "logg_" + aktivKube.id;
-  let logg = JSON.parse(localStorage.getItem(nøkkel) || "[]");
-  logg = logg.filter(entry => entry.tid !== tid);
-  localStorage.setItem(nøkkel, JSON.stringify(logg));
-  visLogg();
-}
