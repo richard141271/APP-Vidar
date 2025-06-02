@@ -1,7 +1,7 @@
 {
   "name": "Birøkter App Vidar",
   "short_name": "Vidar",
-  "start_url": ".",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f0f0f0",
   "theme_color": "#ffd000",

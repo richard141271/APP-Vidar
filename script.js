@@ -8,7 +8,10 @@ function visKubeoversikt() {
   document.getElementById("kube-detaljer").style.display = "none";
 
   const div = document.getElementById("kubeoversikt");
-  div.innerHTML = "<h2>Mine kuber</h2>";
+  div.innerHTML = `<h2>Mine kuber</h2>
+    <button onclick="eksporterData()">⬇️ Eksporter data</button>
+    <input type="file" onchange="importerData(event)">`;
+
   kuber.forEach((kube, i) => {
     div.innerHTML += `
       <div class="kube">
@@ -69,6 +72,7 @@ function lagreInspeksjon() {
     temp: document.getElementById("temp").value,
     vær: document.getElementById("vær").value,
     notat: document.getElementById("notat").value,
+    tilstand: document.querySelector('input[name="tilstand"]:checked')?.value || "n/a",
     bilde: document.getElementById("forhåndsvisning").src,
     tid: new Date().toLocaleString()
   };
@@ -85,12 +89,55 @@ function visLogg() {
   const div = document.getElementById("logg");
   div.innerHTML = "";
   logg.forEach(entry => {
-    div.innerHTML += `<div><strong>${entry.tid}</strong><br>
-    ${entry.temp}°C | ${entry.vær}<br>
-    ${entry.notat}<br>
-    ${entry.bilde ? "<img src='" + entry.bilde + "' style='max-width:100px;'>" : ""}
-    </div><hr>`;
+    let farge = entry.tilstand === "grønn" ? "#ccffcc" :
+                entry.tilstand === "gul" ? "#fffccc" :
+                entry.tilstand === "rød" ? "#ffcccc" : "#eee";
+    div.innerHTML += `<div style="background:${farge};padding:5px;margin-bottom:10px;">
+      <strong>${entry.tid}</strong><br>
+      ${entry.temp}°C | ${entry.vær} | ${entry.tilstand}<br>
+      ${entry.notat}<br>
+      ${entry.bilde ? "<img src='" + entry.bilde + "' style='max-width:100px;'>" : ""}
+    </div>`;
   });
+}
+
+function eksporterData() {
+  const allData = {
+    kuber: kuber,
+    logger: {}
+  };
+  kuber.forEach(k => {
+    allData.logger[k.id] = JSON.parse(localStorage.getItem("logg_" + k.id) || "[]");
+  });
+  const blob = new Blob([JSON.stringify(allData)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "birøkter-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importerData(event) {
+  const fil = event.target.files[0];
+  if (fil) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const data = JSON.parse(e.target.result);
+      if (data.kuber && data.logger) {
+        kuber = data.kuber;
+        localStorage.setItem("kuber", JSON.stringify(kuber));
+        for (let id in data.logger) {
+          localStorage.setItem("logg_" + id, JSON.stringify(data.logger[id]));
+        }
+        visKubeoversikt();
+        alert("✅ Importert!");
+      } else {
+        alert("❌ Ugyldig fil.");
+      }
+    };
+    reader.readAsText(fil);
+  }
 }
 
 visKubeoversikt();
