@@ -3,28 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Birøkter Vidar</title>
+  <title>Birøkter App – Vidar</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🐝 Kube: Rascheprangen</h1>
-  <p><strong>Plassering:</strong> hjemme</p>
-  <p><strong>Type:</strong> stor</p>
-  <p><strong>Opprettet:</strong> 2.6.2025</p>
+  <h1>🐝 Kubeoversikt</h1>
+  <div id="kube-liste"></div>
+  <hr>
+  <div id="inspeksjon" style="display:none;">
+    <h2 id="kube-navn">Inspeksjon</h2>
+    <p><strong>Plassering:</strong> <span id="plassering"></span></p>
+    <p><strong>Type:</strong> <span id="type"></span></p>
+    <p><strong>Opprettet:</strong> <span id="opprettet"></span></p>
 
-  <h2>Ny inspeksjon</h2>
-  <input type="text" id="temp" placeholder="Temperatur (°C)">
-  <input type="text" id="vær" placeholder="Værforhold">
-  <textarea id="notat" placeholder="Notater"></textarea>
-
-  <label>
-    📸 Ta bilde:
-    <input type="file" accept="image/*" capture="environment" onchange="visBilde(event)">
-  </label>
-  <img id="forhåndsvisning" style="max-width: 100%; margin-top: 10px; display: none;">
-
-  <button onclick="lagreInspeksjon()">Lagre inspeksjon</button>
-
+    <h3>Ny inspeksjon</h3>
+    <input type="text" id="temp" placeholder="Temperatur (°C)">
+    <input type="text" id="vær" placeholder="Værforhold">
+    <textarea id="notat" placeholder="Notater"></textarea>
+    <label>📸 Ta bilde:
+      <input type="file" accept="image/*" capture="environment" onchange="visBilde(event)">
+    </label>
+    <img id="forhåndsvisning" style="max-width:100%; margin-top:10px; display:none;">
+    <button onclick="lagreInspeksjon()">Lagre inspeksjon</button>
+    <button onclick="tilbake()">Tilbake</button>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
