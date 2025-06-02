@@ -5,28 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Birøkter App – Vidar</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.png">
 </head>
 <body>
-  <h1>🐝 Kubeoversikt</h1>
-  <div id="kube-liste"></div>
-  <hr>
-  <div id="inspeksjon" style="display:none;">
-    <h2 id="kube-navn">Inspeksjon</h2>
-    <p><strong>Plassering:</strong> <span id="plassering"></span></p>
-    <p><strong>Type:</strong> <span id="type"></span></p>
-    <p><strong>Opprettet:</strong> <span id="opprettet"></span></p>
+  <header>
+    <h1>Birøkter App</h1>
+    <nav>
+      <button onclick="visKubeoversikt()">Mine kuber</button>
+      <button onclick="visRegistrerKube()">Registrer kube</button>
+    </nav>
+  </header>
 
-    <h3>Ny inspeksjon</h3>
-    <input type="text" id="temp" placeholder="Temperatur (°C)">
-    <input type="text" id="vær" placeholder="Værforhold">
-    <textarea id="notat" placeholder="Notater"></textarea>
-    <label>📸 Ta bilde:
-      <input type="file" accept="image/*" capture="environment" onchange="visBilde(event)">
-    </label>
-    <img id="forhåndsvisning" style="max-width:100%; margin-top:10px; display:none;">
-    <button onclick="lagreInspeksjon()">Lagre inspeksjon</button>
-    <button onclick="tilbake()">Tilbake</button>
-  </div>
+  <main>
+    <section id="kubeoversikt"></section>
+    <section id="registrer-kube" style="display:none;">
+      <h2>Registrer ny kube</h2>
+      <input id="ny-id" placeholder="Kube-navn">
+      <input id="ny-plassering" placeholder="Plassering">
+      <input id="ny-type" placeholder="Type">
+      <button onclick="lagreNyKube()">Lagre kube</button>
+    </section>
+    <section id="kube-detaljer" style="display:none;">
+      <h2 id="kube-navn"></h2>
+      <p><strong>Plassering:</strong> <span id="plassering"></span></p>
+      <p><strong>Type:</strong> <span id="type"></span></p>
+      <p><strong>Opprettet:</strong> <span id="opprettet"></span></p>
+      <h3>Ny inspeksjon</h3>
+      <input type="text" id="temp" placeholder="Temperatur (°C)">
+      <input type="text" id="vær" placeholder="Værforhold">
+      <textarea id="notat" placeholder="Notater"></textarea>
+      <label>📸 Ta bilde:
+        <input type="file" accept="image/*" capture="environment" onchange="visBilde(event)">
+      </label>
+      <img id="forhåndsvisning" style="max-width:100%; display:none; margin-top:10px;">
+      <button onclick="lagreInspeksjon()">Lagre inspeksjon</button>
+      <h3>Logg</h3>
+      <div id="logg"></div>
+      <button onclick="visKubeoversikt()">Tilbake</button>
+    </section>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>

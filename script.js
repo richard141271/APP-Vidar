@@ -1,56 +1,64 @@
 
-const kuber = [
-  {
-    "id": "Rascheprangen",
-    "plassering": "hjemme",
-    "type": "stor",
-    "opprettet": "2.6.2025"
-  },
-  {
-    "id": "Furulia",
-    "plassering": "skogkanten",
-    "type": "medium",
-    "opprettet": "28.5.2025"
-  }
-];
+let kuber = JSON.parse(localStorage.getItem("kuber") || "[]");
+let aktivKube = null;
 
-function visKuber() {
-  const liste = document.getElementById('kube-liste');
-  liste.innerHTML = '';
-  kuber.forEach((kube, index) => {
-    const div = document.createElement('div');
-    div.className = 'kube';
-    div.innerHTML = `<h2>${kube.id}</h2><p>${kube.plassering}</p><button onclick="visInspeksjon(${index})">Inspiser</button>`;
-    liste.appendChild(div);
+function visKubeoversikt() {
+  document.getElementById("kubeoversikt").style.display = "block";
+  document.getElementById("registrer-kube").style.display = "none";
+  document.getElementById("kube-detaljer").style.display = "none";
+
+  const div = document.getElementById("kubeoversikt");
+  div.innerHTML = "<h2>Mine kuber</h2>";
+  kuber.forEach((kube, i) => {
+    div.innerHTML += `
+      <div class="kube">
+        <strong>${kube.id}</strong><br>
+        Plassering: ${kube.plassering}<br>
+        Type: ${kube.type}<br>
+        Opprettet: ${kube.opprettet}<br>
+        <button onclick="visDetaljer(${i})">Vis detaljer</button>
+      </div>`;
   });
 }
 
-let aktivKube = null;
-
-function visInspeksjon(index) {
-  aktivKube = kuber[index];
-  document.getElementById('kube-navn').innerText = aktivKube.id;
-  document.getElementById('plassering').innerText = aktivKube.plassering;
-  document.getElementById('type').innerText = aktivKube.type;
-  document.getElementById('opprettet').innerText = aktivKube.opprettet;
-  document.getElementById('inspeksjon').style.display = 'block';
-  document.getElementById('kube-liste').style.display = 'none';
+function visRegistrerKube() {
+  document.getElementById("kubeoversikt").style.display = "none";
+  document.getElementById("registrer-kube").style.display = "block";
+  document.getElementById("kube-detaljer").style.display = "none";
 }
 
-function tilbake() {
-  document.getElementById('inspeksjon').style.display = 'none';
-  document.getElementById('kube-liste').style.display = 'block';
+function lagreNyKube() {
+  const id = document.getElementById("ny-id").value;
+  const plassering = document.getElementById("ny-plassering").value;
+  const type = document.getElementById("ny-type").value;
+  const opprettet = new Date().toLocaleDateString();
+  kuber.push({ id, plassering, type, opprettet });
+  localStorage.setItem("kuber", JSON.stringify(kuber));
+  visKubeoversikt();
+}
+
+function visDetaljer(index) {
+  aktivKube = kuber[index];
+  document.getElementById("kubeoversikt").style.display = "none";
+  document.getElementById("registrer-kube").style.display = "none";
+  document.getElementById("kube-detaljer").style.display = "block";
+
+  document.getElementById("kube-navn").innerText = aktivKube.id;
+  document.getElementById("plassering").innerText = aktivKube.plassering;
+  document.getElementById("type").innerText = aktivKube.type;
+  document.getElementById("opprettet").innerText = aktivKube.opprettet;
+
+  visLogg();
 }
 
 function visBilde(event) {
-  const img = document.getElementById('forhåndsvisning');
+  const img = document.getElementById("forhåndsvisning");
   const fil = event.target.files[0];
   if (fil) {
     const reader = new FileReader();
     reader.onload = function(e) {
       img.src = e.target.result;
-      img.style.display = 'block';
-      localStorage.setItem('bildeData_' + aktivKube.id, e.target.result);
+      img.style.display = "block";
     };
     reader.readAsDataURL(fil);
   }
@@ -58,14 +66,31 @@ function visBilde(event) {
 
 function lagreInspeksjon() {
   const data = {
-    temperatur: document.getElementById('temp').value,
-    vær: document.getElementById('vær').value,
-    notater: document.getElementById('notat').value,
-    bilde: localStorage.getItem('bildeData_' + aktivKube.id) || null,
-    tidspunkt: new Date().toLocaleString()
+    temp: document.getElementById("temp").value,
+    vær: document.getElementById("vær").value,
+    notat: document.getElementById("notat").value,
+    bilde: document.getElementById("forhåndsvisning").src,
+    tid: new Date().toLocaleString()
   };
-  localStorage.setItem('inspeksjon_' + aktivKube.id, JSON.stringify(data));
-  alert("✅ Inspeksjon for " + aktivKube.id + " lagret lokalt!");
+  const nøkkel = "logg_" + aktivKube.id;
+  const eksisterende = JSON.parse(localStorage.getItem(nøkkel) || "[]");
+  eksisterende.unshift(data);
+  localStorage.setItem(nøkkel, JSON.stringify(eksisterende));
+  visLogg();
 }
 
-visKuber();
+function visLogg() {
+  const nøkkel = "logg_" + aktivKube.id;
+  const logg = JSON.parse(localStorage.getItem(nøkkel) || "[]");
+  const div = document.getElementById("logg");
+  div.innerHTML = "";
+  logg.forEach(entry => {
+    div.innerHTML += `<div><strong>${entry.tid}</strong><br>
+    ${entry.temp}°C | ${entry.vær}<br>
+    ${entry.notat}<br>
+    ${entry.bilde ? "<img src='" + entry.bilde + "' style='max-width:100px;'>" : ""}
+    </div><hr>`;
+  });
+}
+
+visKubeoversikt();

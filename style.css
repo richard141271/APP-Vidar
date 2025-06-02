@@ -2,6 +2,22 @@
 body {
   font-family: sans-serif;
   background: #f0f0f0;
+  margin: 0;
+}
+header {
+  background: #ffd000;
+  padding: 10px;
+  text-align: center;
+}
+nav button {
+  margin: 5px;
+  padding: 10px;
+  background: black;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+main {
   padding: 20px;
 }
 input, textarea {
@@ -18,4 +34,10 @@ button {
 }
 button:hover {
   background: #ffb700;
+}
+.kube {
+  border: 1px solid #ccc;
+  background: white;
+  margin-bottom: 10px;
+  padding: 10px;
 }
