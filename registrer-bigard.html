@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registrer bigård</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<a href="index.html" class="back">← Tilbake</a>
+<h1>Registrer ny bigård</h1>
+<form id="bigardForm">
+  <input name="navn" placeholder="Navn på bigård" required>
+  <input name="adresse" placeholder="Adresse / plassering">
+  <button class="btn">Lagre bigård</button>
+</form>
+<script src="app.js"></script>
+<script>
+document.getElementById('bigardForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = e.target;
+  const data = { id: 'b-'+Date.now(), navn: f.navn.value, adresse: f.adresse.value };
+  saveBigard(data);
+  location.href = 'bigarder.html';
+});
+</script>
+</body></html>
