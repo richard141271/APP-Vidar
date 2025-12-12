@@ -1,14 +1,14 @@
 {
-  "name": "Birøkter App",
-  "short_name": "Birøkter",
+  "name": "Vidar",
+  "short_name": "Vidar",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffcc00",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/616/616408.png",
-      "sizes": "192x192",
+      "src": "icon.png?v=2",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
