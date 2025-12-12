@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bikuber</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<a href="bigarder.html" class="back">← Tilbake</a>
+<h1>Bikuber</h1>
+<div id="bikube-list"></div>
+<script src="app.js"></script>
+<script>
+const url = new URL(location.href);
+const bigardId = url.searchParams.get('bigard');
+renderBikuber(bigardId);
+function renderBikuber(bigardId){
+  const list = document.getElementById('bikube-list');
+  const kuber = getBikuber().filter(k=>!bigardId || k.bigardId===bigardId);
+  if(!kuber.length) list.innerHTML = '<p>Ingen bikuber enda.</p>';
+  else list.innerHTML = kuber.map(k=>`
+    <div class="card">
+      <h3>${escapeHtml(k.navn)}</h3>
+      <p>Type: ${escapeHtml(k.type||'')}</p>
+      <p><a href="#" onclick="alert('Vis detaljer her')" class="btn small">Vis detaljer</a></p>
+    </div>
+  `).join('');
+}
+</script>
+</body></html>
