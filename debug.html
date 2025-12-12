@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Debug localStorage</title>
+<style>body{font-family:system-ui;padding:16px}pre{white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:6px}button{padding:8px 12px;background:#ffd100;border:none;border-radius:6px}</style>
+</head><body>
+<h1>Debug localStorage</h1>
+<p>Trykk for å vise de viktigste nøklene.</p>
+<button id="show">Vis data</button>
+<pre id="out"></pre>
+<script>
+document.getElementById('show').addEventListener('click', ()=>{
+  const out = document.getElementById('out');
+  const keys = ['kuber','bikuber','bigarder','inspeksjoner','data','appData'];
+  const found = {};
+  keys.forEach(k=>{
+    try{
+      const v = localStorage.getItem(k);
+      if(v!==null) found[k]=JSON.parse(v);
+    }catch(e){
+      const v = localStorage.getItem(k);
+      if(v!==null) found[k]=v;
+    }
+  });
+  // fallback: show all if nothing found
+  if(Object.keys(found).length===0){
+    let full = {};
+    for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); try{ full[key]=JSON.parse(localStorage.getItem(key)); }catch(e){ full[key]=localStorage.getItem(key);} }
+    out.textContent = JSON.stringify(full,null,2);
+    return;
+  }
+  out.textContent = JSON.stringify(found,null,2);
+});
+</script>
+</body></html>
