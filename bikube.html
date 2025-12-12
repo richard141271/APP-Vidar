@@ -1,27 +1,124 @@
 <!doctype html>
-<html><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bikuber</title><link rel="stylesheet" href="style.css"></head>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bikube</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
 <a href="bigarder.html" class="back">← Tilbake</a>
-<h1>Bikuber</h1>
-<div id="bikube-list"></div>
+<div class="container">
+  <h1 id="kube-title">Bikube</h1>
+
+  <section id="kube-info"></section>
+
+  <h2>Ny inspeksjon</h2>
+  <form id="inspeksjonForm">
+    <input name="temperatur" placeholder="Temperatur (°C)" inputmode="numeric">
+    <input name="var" placeholder="Værforhold (f.eks. Overskyet)">
+    <textarea name="notater" placeholder="Notater"></textarea>
+    <label for="photoInput" class="btn small">Ta/velg bilde (valgfritt)</label>
+    <input id="photoInput" type="file" accept="image/*;capture=camera" style="display:none">
+    <input name="bildeUrl" placeholder="Bilde-URL (valgfritt)">
+    <button class="btn" type="submit">Lagre inspeksjon</button>
+  </form>
+
+  <h2>Logg</h2>
+  <div id="inspeksjon-logg"></div>
+</div>
+
 <script src="app.js"></script>
 <script>
-const url = new URL(location.href);
-const bigardId = url.searchParams.get('bigard');
-renderBikuber(bigardId);
-function renderBikuber(bigardId){
-  const list = document.getElementById('bikube-list');
-  const kuber = getBikuber().filter(k=>!bigardId || k.bigardId===bigardId);
-  if(!kuber.length) list.innerHTML = '<p>Ingen bikuber enda.</p>';
-  else list.innerHTML = kuber.map(k=>`
+const params = new URL(location.href).searchParams;
+const kubeId = params.get('id'); // vi bruker id=query param
+const bigardId = params.get('bigard');
+
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleString();
+}
+
+function renderKube(){
+  const kuber = getBikuber();
+  const k = kuber.find(x => x.id === kubeId) || (kuber.find(x => x.bigardId===bigardId) || {});
+  document.getElementById('kube-title').textContent = k.navn || 'Bikube';
+  const info = document.getElementById('kube-info');
+  info.innerHTML = `
+    <p><strong>Type:</strong> ${escapeHtml(k.type||'')}</p>
+    <p><strong>Opprettet:</strong> ${k.opprettet ? formatDate(k.opprettet) : '-'}</p>
+  `;
+}
+
+function renderInspeksjoner(){
+  const log = document.getElementById('inspeksjon-logg');
+  const all = getInspeksjoner();
+  const list = all.filter(i => i.kubeId === kubeId || (!kubeId && i.bigardId === bigardId));
+  if(!list.length){
+    log.innerHTML = '<p>Ingen inspeksjoner enda.</p>';
+    return;
+  }
+  log.innerHTML = list.map(i => `
     <div class="card">
-      <h3>${escapeHtml(k.navn)}</h3>
-      <p>Type: ${escapeHtml(k.type||'')}</p>
-      <p><a href="#" onclick="alert('Vis detaljer her')" class="btn small">Vis detaljer</a></p>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${formatDate(i.ts)}</strong> | ${escapeHtml(i.temperatur||'')}°C | ${escapeHtml(i.var||'')}</div>
+        <div>
+          <button class="btn small" onclick="deleteInspeksjon('${i.id}')">Slett</button>
+        </div>
+      </div>
+      <p>${escapeHtml(i.notater||'')}</p>
+      ${i.bilde ? `<img src="${i.bilde}" style="max-width:100%;border-radius:6px">` : (i.bildeUrl ? `<a href="${i.bildeUrl}" target="_blank">Bilde-URL</a>` : '')}
     </div>
   `).join('');
 }
+
+document.getElementById('inspeksjonForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f = e.target;
+  const temp = f.temperatur.value;
+  const varfor = f.var.value;
+  const notes = f.notater.value;
+  // bilde via file input (les base64) om satt
+  let bildeData = '';
+  const input = document.getElementById('photoInput');
+  if(input.files && input.files[0]){
+    const file = input.files[0];
+    bildeData = await fileToDataUrl(file);
+  }
+  const bildeUrl = f.bildeUrl.value || '';
+  const obj = {
+    id: 'ins-' + Date.now(),
+    kubeId: kubeId || null,
+    bigardId: bigardId || null,
+    temperatur: temp,
+    var: varfor,
+    notater: notes,
+    bilde: bildeData || '',
+    bildeUrl: bildeUrl || '',
+    ts: Date.now()
+  };
+  saveInspeksjon(obj);
+  f.reset();
+  renderInspeksjoner();
+});
+
+function fileToDataUrl(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=> res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function deleteInspeksjon(id){
+  if(!confirm('Slette denne inspeksjonen?')) return;
+  removeInspeksjon(id);
+  renderInspeksjoner();
+}
+
+renderKube();
+renderInspeksjoner();
 </script>
-</body></html>
+</body>
+</html>
