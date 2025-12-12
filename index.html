@@ -1,54 +1,26 @@
-<!DOCTYPE html>
-<html lang="no">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Birøkterregisteret</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BirøkterRegisteret</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>Birøkterregisteret</header>
-  <nav>
-    <a href="#" onclick="visSide('oversikt')">Mine kuber</a>
-    <a href="#" onclick="visSide('nykube')">Registrer kube</a>
-    <a href="#" onclick="visSide('innstillinger')">Innstillinger</a>
-  </nav>
-  <div class="container">
-    <div id="oversikt" class="side">
-      <h2>Mine kuber</h2>
-      <div id="kubeliste"></div>
-    </div>
-    <div id="nykube" class="side hidden">
-      <h2>Registrer ny kube</h2>
-      <input id="kubenavn" placeholder="Navn på kube" />
-      <input id="plassering" placeholder="Plassering" />
-      <input id="kubetype" placeholder="Type kube" />
-      <button onclick="leggTilKube()">Lagre kube</button>
-    </div>
-    <div id="innstillinger" class="side hidden">
-      <h2>Innstillinger</h2>
-      <p>Flere funksjoner kommer senere.</p>
-    </div>
-    <div id="kubedetaljer" class="side hidden">
-      <h2 id="detaljNavn">Kube-detaljer</h2>
-      <div id="detaljInfo"></div>
-      <h3>Ny inspeksjon</h3>
-      <input id="temp" placeholder="Temperatur (°C)" />
-      <input id="vaer" placeholder="Værforhold" />
-      <textarea id="notat" placeholder="Notater"></textarea>
-      <input id="bildeurl" placeholder="Bilde-URL" />
-      <button onclick="lagreInspeksjon()">Lagre inspeksjon</button>
-      <h3>Logg</h3>
-      <div id="loggvisning"></div>
-      <button onclick="visSide('oversikt')">Tilbake</button>
-    </div>
-  </div>
-  <script src="script.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
+  <header class="hero">
+    <img src="icon.png" alt="logo" class="logo">
+    <h1>BirøkterRegisteret</h1>
+  </header>
+
+  <main class="menu">
+    <a href="bigarder.html" class="btn">Mine bigårder</a>
+    <a href="registrer-bigard.html" class="btn">Registrer ny bigård</a>
+    <a href="bikube.html" class="btn">Mine bikuber</a>
+    <a href="registrer-bikube.html" class="btn">Registrer ny bikube</a>
+    <a href="#" class="btn">Innstillinger</a>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
