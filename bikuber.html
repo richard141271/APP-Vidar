@@ -8,49 +8,31 @@
 </head>
 <body>
   <a href="index.html" class="back">← Tilbake</a>
-  <div class="container">
+  <main class="container">
     <h1>Mine bikuber</h1>
-
-    <div id="bikuber-list"></div>
-
-    <p style="margin-top:2rem">
-      <a href="registrer-bikube.html" class="btn">Registrer ny bikube</a>
-    </p>
-  </div>
+    <div id="kuber-list"></div>
+  </main>
 
   <script src="app.js"></script>
   <script>
-    // Når app.js er lastet, bruk getBikuber() fra app.js
-    function renderBikuber() {
-      const listEl = document.getElementById('bikuber-list');
-      const arr = (typeof getBikuber === 'function') ? getBikuber() : [];
-      if(!arr || !arr.length) {
-        listEl.innerHTML = '<p>Ingen bikuber funnet. Opprett en ny bikube via "Registrer ny bikube".</p>';
+    // viser kuber og lenker til bikube.html?id=xxx&bigard=yyy
+    function renderKuber(){
+      const list = document.getElementById('kuber-list');
+      const kuber = getKuber(); // forutsetter funksjonen fra app.js
+      if(!kuber.length){
+        list.innerHTML = '<p>Ingen kuber enda.</p>';
         return;
       }
-
-      // bygg kort for hver kube
-      listEl.innerHTML = arr.map(b => {
-        // vi konstrurerer link til detaljside: bikube.html?id=ID
-        const id = encodeURIComponent(b.id || '');
-        const navn = (b.navn || 'Uten navn').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const type = (b.type || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const created = b.opprettet ? String(b.opprettet) : '-';
-        const bigard = b.bigard || '';
-        return `
-          <div class="card">
-            <h3>${navn}</h3>
-            <p>Plassering: ${bigard}</p>
-            <p>Type: ${type}</p>
-            <p>Opprettet: ${created}</p>
-            <p><a class="btn" href="bikube.html?id=${id}">Vis kube</a></p>
-          </div>
-        `;
-      }).join('');
+      list.innerHTML = kuber.map(k => `
+        <div class="card">
+          <h3>${escapeHtml(k.navn || 'Uten navn')}</h3>
+          <p>Type: ${escapeHtml(k.type || '')}</p>
+          <p>Opprettet: ${k.opprettet ? new Date(k.opprettet).toLocaleString() : '-'}</p>
+          <p><a class="btn" href="bikube.html?id=${encodeURIComponent(k.id)}&bigard=${encodeURIComponent(k.bigardId || '')}">Vis kube</a></p>
+        </div>
+      `).join('');
     }
-
-    // init
-    document.addEventListener('DOMContentLoaded', renderBikuber);
+    renderKuber();
   </script>
 </body>
 </html>
