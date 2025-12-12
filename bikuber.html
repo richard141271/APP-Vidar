@@ -8,30 +8,35 @@
 </head>
 <body>
   <a href="index.html" class="back">← Tilbake</a>
-  <main class="container">
+  <div class="container">
     <h1>Mine bikuber</h1>
     <div id="kuber-list"></div>
-  </main>
+  </div>
 
   <script src="app.js"></script>
   <script>
-    // viser kuber og lenker til bikube.html?id=xxx&bigard=yyy
+    // renderer for list av kuber — bruker getKuber() fra app.js
     function renderKuber(){
-      const list = document.getElementById('kuber-list');
-      const kuber = getKuber(); // forutsetter funksjonen fra app.js
-      if(!kuber.length){
-        list.innerHTML = '<p>Ingen kuber enda.</p>';
+      const listEl = document.getElementById('kuber-list');
+      const kuber = getKuber(); // må finnes i app.js
+      if(!kuber || !kuber.length){
+        listEl.innerHTML = '<p>Ingen kuber enda.</p>';
         return;
       }
-      list.innerHTML = kuber.map(k => `
+      listEl.innerHTML = kuber.map(k => `
         <div class="card">
-          <h3>${escapeHtml(k.navn || 'Uten navn')}</h3>
-          <p>Type: ${escapeHtml(k.type || '')}</p>
-          <p>Opprettet: ${k.opprettet ? new Date(k.opprettet).toLocaleString() : '-'}</p>
-          <p><a class="btn" href="bikube.html?id=${encodeURIComponent(k.id)}&bigard=${encodeURIComponent(k.bigardId || '')}">Vis kube</a></p>
+          <h3>${escapeHtml(k.navn||'Uten navn')}</h3>
+          <p>Type: ${escapeHtml(k.type||'Standard')}</p>
+          <p>Opprettet: ${k.opprettet? new Date(k.opprettet).toLocaleString() : '-'}</p>
+          <p>
+            <!-- linker til detaljsida bikube.html med id i querystring -->
+            <a class="btn" href="bikube.html?id=${encodeURIComponent(k.id)}&bigard=${encodeURIComponent(k.bigardId||'')}">Åpne kube</a>
+          </p>
         </div>
       `).join('');
     }
+
+    // escapeHtml må finnes i app.js (du har escapeHtml der allerede)
     renderKuber();
   </script>
 </body>
