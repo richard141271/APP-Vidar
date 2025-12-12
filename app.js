@@ -1,4 +1,25 @@
 // enkel storage-api
+/* --- STORAGE HELPERS FOR KUBER (legg dette inn i app.js) --- */
+
+// canonical helpers (bruk 'kuber' som localStorage-nøkkel)
+function getKuber(){
+  return JSON.parse(localStorage.getItem('kuber') || '[]');
+}
+function saveKuber(arr){
+  localStorage.setItem('kuber', JSON.stringify(arr));
+}
+function saveKube(obj){
+  const a = getKuber();
+  if(!obj.id) obj.id = 'kube-' + Date.now();      // gi kuben en id hvis ikke satt
+  if(!obj.opprettet) obj.opprettet = Date.now(); // sett opprettet-tid
+  a.unshift(obj);
+  saveKuber(a);
+}
+
+// backward-compatible aliases (hvis andre steder i koden bruker disse navnene)
+if(typeof window.getBikuber === 'undefined') window.getBikuber = getKuber;
+if(typeof window.saveBikuber === 'undefined') window.saveBikuber = saveKuber;
+if(typeof window.saveKube === 'undefined') window.saveKube = saveKube; // hvis ikke allerede definert
 function getBigarder(){ return JSON.parse(localStorage.getItem('bigarder')||'[]'); }
 function saveBigarder(arr){ localStorage.setItem('bigarder', JSON.stringify(arr)); }
 function saveBigard(obj){ const a=getBigarder(); a.unshift(obj); saveBigarder(a); }
