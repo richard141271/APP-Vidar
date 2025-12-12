@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registrer bikube</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<a href="index.html" class="back">← Tilbake</a>
+<h1>Registrer ny bikube</h1>
+<form id="kubeForm">
+  <input name="navn" placeholder="Navn på kube" required>
+  <input name="type" placeholder="Type (f.eks. Langramme)">
+  <select name="bigard">
+    <option value="">Velg bigård (valgfritt)</option>
+  </select>
+  <button class="btn">Lagre kube</button>
+</form>
+<script src="app.js"></script>
+<script>
+const sel = document.querySelector('select[name=bigard]');
+getBigarder().forEach(b=> sel.appendChild(new Option(b.navn,b.id)));
+document.getElementById('kubeForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f=e.target;
+  const k = { id:'k-'+Date.now(), navn:f.navn.value, type:f.type.value, bigardId:f.bigard.value };
+  saveKube(k);
+  location.href='bikube.html';
+});
+</script>
+</body></html>
