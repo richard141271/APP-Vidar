@@ -30,9 +30,8 @@
 
 <script src="app.js"></script>
 <script>
-const params = new URL(location.href).searchParams;
-const kubeId = params.get('id'); // vi bruker id=query param
-const bigardId = params.get('bigard');
+const kuber = getKuber();
+const k = kuber.find(x => x.id === kubeId);
 
 function formatDate(ts){
   const d = new Date(ts);
