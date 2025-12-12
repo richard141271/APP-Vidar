@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mine bigårder</title><link rel="stylesheet" href="style.css">
+</head><body>
+<a href="index.html" class="back">← Tilbake</a>
+<h1>Mine bigårder</h1>
+<div id="bigarder-list"></div>
+<script src="app.js"></script>
+<script>
+renderBigarder();
+function renderBigarder(){
+  const list = document.getElementById('bigarder-list');
+  const bigarder = getBigarder();
+  if(!bigarder.length) list.innerHTML = '<p>Ingen bigårder enda.</p>';
+  else list.innerHTML = bigarder.map(b=>`
+    <div class="card">
+      <h3>${escapeHtml(b.navn)}</h3>
+      <p>Adresse: ${escapeHtml(b.adresse||'')}</p>
+      <p><a href="bikube.html?bigard=${encodeURIComponent(b.id)}" class="btn small">Vis bikuber</a></p>
+    </div>
+  `).join('');
+}
+</script>
+</body></html>
